@@ -1,0 +1,88 @@
+# import liraries
+# import logistic regression from sklearn
+
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+import pandas as pd
+import sklearn.datasets
+from sklearn.model_selection import train_test_split
+
+#import accuracy score from sklearn
+
+from sklearn.metrics import accuracy_score
+
+#getting datasets
+
+breast_cancer = sklearn.datasets.load_breast_cancer()
+
+print(breast_cancer)
+
+X = breast_cancer.data
+Y = breast_cancer.target
+
+print(X.shape, Y.shape)
+
+data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+data['class'] = breast_cancer.target
+print(data['class'].value_counts())
+data.groupby('class').mean()
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
+print(Y.shape, Y_train.shape, Y_test.shape)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.1)
+
+# test size -> determines the percentage of testdata required
+
+print(Y.shape, Y_train.shape, Y_test.shape)
+print(Y.mean(), Y_train.mean(), Y_test.mean())
+X_train, X_test, Y_train, Y_split = train_test_split(X, Y, test_size=0.1, stratify=Y)
+
+# stratify ->for correct distribution of the data as of the original data
+
+print(Y.mean(), Y_train.mean(), Y_test.mean())
+X_train, X_test, Y_train, Y_split = train_test_split(X, Y, test_size=0.1, stratify=Y, random_state=1)
+
+# random state -> specific split of data so that each value of random state splits the data differently
+
+print(Y.shape, Y_train.shape, Y_test.shape)
+print(Y.mean(), Y_train.mean(), Y_test.mean())
+print(X.mean(), X_train.mean(), X_test.mean())
+print(X_train)
+
+#loading logistic regression into a variable called 'classifier'
+
+classifier = LogisticRegression()
+
+# training the model on training data
+
+classifier.fit(X_train, Y_train)
+
+prediction_on_trainingdata = classifier.predict(X_train)
+accuracy_on_trainingdata = accuracy_score(Y_train, prediction_on_trainingdata)
+print('Accuracy on training data: ', accuracy_on_trainingdata)
+prediction_on_testdata = classifier.predict(X_test)
+accuracy_on_testdata = accuracy_score(Y_test, prediction_on_testdata)
+print('Accuracy on test data: ', accuracy_on_testdata)
+classifier.score(X_test, Y_test)
+
+#DETECTION WHETER THE PATIENT HAS BREAST CANCER / NOT
+
+input_data = (17.99,10.38,122.8,1001,0.1184,0.2776,0.3001,0.1471,0.2419,0.07871,1.095,0.9053,8.589,153.4,0.006399,0.04904,0.05373,0.01587,0.03003,0.006193,25.38,17.33,184.6,2019,0.1622,0.6656,0.7119,0.2654,0.4601,0.1189)
+input_asnp = np.asarray(input_data)
+input_reshaped = input_asnp.reshape(1, -1)
+prediction = classifier.predict(input_reshaped)
+print(prediction)
+
+if (prediction[0] == 0):
+    print("The patient is in Malignant stage")
+else:
+    print("The patient is in Beging stage")
+
+
+#DETECTING THE BREAST CANCER USING KNN ALGORITHM
+
+from sklearn.neighbors import KNeighborsClassifier
+clf = KNeighborsClassifier(n_neighbors = 2)
+clf.fit(X_train, Y_train)
+clf.predict(X_test)
+clf.score(X, Y)
